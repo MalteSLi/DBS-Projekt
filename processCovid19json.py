@@ -1,6 +1,6 @@
 import psycopg2
 
-create_table_country = """CREATE TABLE IF NOT EXISTS Country (
+create_table_country = """CREATE TABLE Country (
     c_name varchar,
     c_country_code varchar,
     "c_geoID" varchar,
@@ -10,7 +10,7 @@ create_table_country = """CREATE TABLE IF NOT EXISTS Country (
     primary key ("c_geoID"));"""
 
 create_table_daydata = """CREATE TABLE IF NOT EXISTS DayData (
-    d_dayID serial PRIMARY KEY,
+    d_dayID SERIAL PRIMARY KEY,
     d_population integer,
     d_cases integer,
     d_deaths integer,
@@ -18,9 +18,9 @@ create_table_daydata = """CREATE TABLE IF NOT EXISTS DayData (
     d_sringency_index decimal);"""
 
 create_table_has = """CREATE TABLE IF NOT EXISTS Has (
-    h_ID serial PRIMARY KEY,
-    h_geoID integer FOREIGN KEY REFERENCES Country,
-    h_dayID integer FOREIGN KEY REFERENCES DayData,
+    h_ID SERIAL PRIMARY KEY,
+    h_geoID integer,
+    h_dayID integer,
     h_day integer,
     h_month integer,
     h_year integer);"""
@@ -29,6 +29,7 @@ try:
     conn = None    
     conn = psycopg2.connect(host="localhost", database="dbs_project_covid19", user="postgres", password="20postgres20")
     cur = conn.cursor()
+    print ( conn.get_dsn_parameters(),"\n")
     cur.execute(create_table_country)
     cur.execute(create_table_daydata)
     cur.execute(create_table_has)
