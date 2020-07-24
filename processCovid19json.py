@@ -1,6 +1,6 @@
 import psycopg2
 
-create_table_country = '''CREATE TABLE Country (
+create_table_country = '''CREATE TABLE IF NOT EXISTS Country (
     c_name varchar,
     c_country_code varchar,
     "c_geoID" varchar,
