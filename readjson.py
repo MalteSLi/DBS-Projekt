@@ -5,7 +5,7 @@ with open('covid19.json') as json_file:
     i = 0
     for rec in data['records']:
         print('countriesAndTerritories: ' + rec['countriesAndTerritories'])
-        print('date: ' + rec['day'] + rec['month'] + rec['year'])
+        print('date: ' + rec['day'] + "/" + rec['month'] + "/" + rec['year'])
         print('cases: ' + rec['cases'])
         print('deaths: ' + rec['deaths'])
         print('')
