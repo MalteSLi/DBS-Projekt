@@ -1,6 +1,8 @@
 import psycopg2
 import json
 
+drop_table = 'DROP TABLE IF EXISTS '
+
 create_table_country = '''CREATE TABLE IF NOT EXISTS Country (
     c_name varchar,
     c_country_code varchar,
@@ -26,15 +28,21 @@ create_table_has = '''CREATE TABLE IF NOT EXISTS Has (
     h_month integer,
     h_year integer);'''
 
-##### Tabellen in DB erstellen, wenn noch nicht vorhanden #####
+##### Alte Tabellen löschen und neu erstellen #####
 try:
     conn = None    
     conn = psycopg2.connect(host="localhost", database="dbs_project_covid19", user="postgres", password="20postgres20")
     cur = conn.cursor()
     print ( conn.get_dsn_parameters(),"\n")
+    cur.execute(drop_table+'Country'+';')
+    conn.commit()
     cur.execute(create_table_country)
     conn.commit()
+    cur.execute(drop_table+'DayData'+';')
+    conn.commit()
     cur.execute(create_table_daydata)
+    conn.commit()
+    cur.execute(drop_table+'Has'+';')
     conn.commit()
     cur.execute(create_table_has)
     conn.commit()
@@ -45,49 +53,49 @@ except (Exception, psycopg2.DatabaseError) as error:
 with open('covid19.json') as json_file:
     data = json.load(json_file)
     dayID = 0
-    geoid = "NULL"
+    geoid = ""
     for rec in data['records']:
         ### fetch data and correct if neccessary ###
         if "countriesAndTerritories" in rec:
             name = rec['countriesAndTerritories']
-        else:
+        if len(name) == 0:
             name = "NULL"
         if "countryterritoryCode" in rec:
             code = rec['countryterritoryCode']
-        else:
+        if len(code) == 0:
             code = "NULL"
         geoID_alt = geoid
         if "geoId" in rec:
             geoid = rec['geoId']
-        else:
+        if len(geoid) == 0:
             geoid = "NULL"
         if "continentExp" in rec:
             continent = rec['continentExp']
-        else:
+        if len(continent) == 0:
             continent = "NULL"
         if "day" in rec:
             day = rec['day']
-        else:
+        if len(day) == 0:
             day = "NULL"
         if "month" in rec:
             month = rec['month']
-        else:
+        if len(month) == 0:
             month = "NULL"
         if "year" in rec:
             year = rec['year']
-        else:
+        if len(year) == 0:
             year = "NULL"
         if "cases" in rec:
             cases = rec['cases']
-        else:
+        if len(cases) == 0:
             cases = "NULL"
         if "deaths" in rec:
             deaths = rec['deaths']
-        else:
+        if len(deaths) == 0:
             deaths = "NULL"
         if "popData2018" in rec:
             pop = rec['popData2018']
-        else:
+        if len(pop) == 0:
             pop = "NULL"
         
         ### SQL Queries ###
