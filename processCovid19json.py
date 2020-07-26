@@ -8,13 +8,13 @@ create_table_country = '''CREATE TABLE IF NOT EXISTS Country (
     c_country_code varchar,
     c_geoID varchar,
     c_continent varchar,
+    c_population double precision,
     c_population_density double precision,
     c_hospital_beds_pt double precision,
     primary key (c_geoID));'''
 
 create_table_daydata = '''CREATE TABLE IF NOT EXISTS DayData (
     d_dayID integer PRIMARY KEY,
-    d_population integer,
     d_cases integer,
     d_deaths integer,
     d_test integer,
@@ -100,8 +100,8 @@ with open('covid19.json') as json_file:
         
         ### SQL Queries ###
         if geoID_alt != geoid:
-            insert_country = "INSERT INTO Country (c_name,c_country_code,c_geoID,c_continent) VALUES ("+"'"+name+"','"+code+"','"+geoid+"','"+continent+"');"
-        insert_daydata = "INSERT INTO DayData (d_dayID,d_population,d_cases,d_deaths) VALUES ("+str(dayID)+","+pop+","+cases+","+deaths+");"
+            insert_country = "INSERT INTO Country (c_name,c_country_code,c_geoID,c_continent,c_population) VALUES ("+"'"+name+"','"+code+"','"+geoid+"','"+continent+"',"+pop+");"
+        insert_daydata = "INSERT INTO DayData (d_dayID,d_cases,d_deaths) VALUES ("+str(dayID)+","+cases+","+deaths+");"
         insert_has = "INSERT INTO Has (h_geoID,h_dayID,h_day,h_month,h_year) VALUES ('"+geoid+"',"+str(dayID)+","+day+","+month+","+year+");"
         
         ### commit sql queries
