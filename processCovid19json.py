@@ -8,8 +8,8 @@ create_table_country = '''CREATE TABLE IF NOT EXISTS Country (
     c_country_code varchar,
     c_geoID varchar,
     c_continent varchar,
-    c_population_density varchar,
-    c_hospital_beds_pt integer,
+    c_population_density double precision,
+    c_hospital_beds_pt double precision,
     primary key (c_geoID));'''
 
 create_table_daydata = '''CREATE TABLE IF NOT EXISTS DayData (
@@ -18,7 +18,7 @@ create_table_daydata = '''CREATE TABLE IF NOT EXISTS DayData (
     d_cases integer,
     d_deaths integer,
     d_test integer,
-    d_sringency_index decimal);'''
+    d_sringency_index double precision);'''
 
 create_table_has = '''CREATE TABLE IF NOT EXISTS Has (
     h_ID serial PRIMARY KEY,
@@ -33,7 +33,7 @@ try:
     conn = None    
     conn = psycopg2.connect(host="localhost", database="dbs_project_covid19", user="postgres", password="20postgres20")
     cur = conn.cursor()
-    print ( conn.get_dsn_parameters(),"\n")
+    ### erst Tabellen löschen und dann neu erstellen. ###
     cur.execute(drop_table+'Country'+';')
     conn.commit()
     cur.execute(create_table_country)
@@ -53,9 +53,9 @@ except (Exception, psycopg2.DatabaseError) as error:
 with open('covid19.json') as json_file:
     data = json.load(json_file)
     dayID = 0
-    geoid = ""
+    name = code = geoid = geoID_alt = continent = day = month = year = cases = deaths = pop = ""
     for rec in data['records']:
-        ### fetch data and correct if neccessary ###
+        ### Daten holen und bereinigen ###
         if "countriesAndTerritories" in rec:
             name = rec['countriesAndTerritories']
         if len(name) == 0:
@@ -105,17 +105,20 @@ with open('covid19.json') as json_file:
         insert_has = "INSERT INTO Has (h_geoID,h_dayID,h_day,h_month,h_year) VALUES ('"+geoid+"',"+str(dayID)+","+day+","+month+","+year+");"
         
         ### commit sql queries
-        if geoID_alt != geoid:
-            cur.execute(insert_country)
+        try:
+            if geoID_alt != geoid:
+                cur.execute(insert_country)
+                conn.commit()
+            cur.execute(insert_daydata)
             conn.commit()
-        cur.execute(insert_daydata)
-        conn.commit()
-        cur.execute(insert_has)
-        conn.commit()
-        dayID += 1
-    print(dayID)
+            cur.execute(insert_has)
+            conn.commit()
+            dayID += 1
+        except (Exception, psycopg2.DatabaseError) as error:
+            print(error)
+    print("Inserted: ",dayID,"records")
 
-#closing database connection
+##### Verbindung zur Datenbank schließen #####
 if(conn):
     cur.close()
     conn.close()
