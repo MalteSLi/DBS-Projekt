@@ -1,0 +1,25 @@
+#wrapper{
+    width: 960px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+header{
+    height: 150px;
+    background: transparent;
+}
+
+section{
+    width: 650px;
+    height: 550px;
+    float: left;
+    background: transparent;
+}
+
+aside{
+    width: 310;
+    height: 550;
+    float: right;
+    background: transparent;
+
+}
