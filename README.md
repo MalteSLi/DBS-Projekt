@@ -16,3 +16,38 @@ Außerdem habe ich die Tabellen für in der DB geändert: Population ist nun bei
 dass an jedem Tag in einem Land die Population gleich ist. Macht also bei Country mehr Sinn finde ich.
 
 TODO: ERM und Relationales Modell müssen entsprechend der oberen Änderung angepasst werden, wenn ihr einverstanden seid.
+
+Ich habe jetzt nicht herausgefunden, wie man vernünftig mit JS verwendet um die Daten aus der DB zu laden.
+Deshalb würde ich PHP als DB-Abfrage-Tool verwenden und die Daten per JS mit deiner Idee @Rebecca darstellen.
+
+PHP konfigurieren für Apache2.4 (zumindest für Windows):
+ 1. Auf https://www.php.net/downloads.php die neueste "Thread Safe" .zip-Datei runterladen
+ 2. .zip-Datei entpacken wo auch immer man diese haben will (Ich bei: "C:\Program Files\")
+ 3. Ordner evtl. umbennen (Ich habe ihne "php" genannt)
+ 4. dann in den php-Ordner gehen und die "php.ini-development" kopieren und wieder einfügen.
+ 5. die Kopie in "php.ini" umbennen
+ 6. in der php.ini:
+ 
+    Simikolon am Anfang der Zeile "extension_dir = "ext"" entfernen (nur für Windows)
+    
+ 7. die Extensions "extension=pdo_pgsql" und "extension=pgsql" auskommentieren (Simikolon entfernen)
+
+Apache2.4 konfigurieren für PHP Nutzung:
+ 1. In der httpd.conf von Apache folgendes ändern:
+      <IfModule dir_module>
+ 
+          DirectoryIndex index.php [ursprünglich: index.html] 
+
+       </IfModule>
+    
+    und ganz unten folgendes hinzufügen:
+   
+      LoadModule php7_module "c:\Program Files\php\php7apache2_4.dll"
+      
+      AddType application/x-httpd-php .php
+      
+      PHPIniDir "c:\Program Files\php"
+      
+    die Pfade müsst ihr natürlich bei euch anpassen.
+ 
+ 2. Computer neu starten!!!
