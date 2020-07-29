@@ -50,7 +50,7 @@ except (Exception, psycopg2.DatabaseError) as error:
     print(error)
 
 ##### Covid19.json öffnen #####
-with open('covid19.json') as json_file:
+with open('../data/covid19.json') as json_file:
     data = json.load(json_file)
     dayID = 0
     name = code = geoid = geoID_alt = continent = day = month = year = cases = deaths = pop = ""

@@ -11,7 +11,7 @@ except (Exception, psycopg2.DatabaseError) as error:
     print(error)
 
 ##### Covid19.json öffnen #####
-with open('owid-covid-data.json') as json_file:
+with open('../data/owid-covid-data.json') as json_file:
     data = json.load(json_file)
     schluessel = data.keys()
     for k in schluessel:
