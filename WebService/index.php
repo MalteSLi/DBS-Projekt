@@ -109,6 +109,12 @@
                             </optgroup>
                         </select>
                     </p>
+                    
+                    <p class="form-box">
+                        <label for="date" title="date">Zeitraum</label>
+          
+                        <input id="fromDate" name="fromDate" type="date" value="2019-12-31" min="2019-12-31" max="2020-06-14"> - <input id="toDate" name="toDate" type="date" min="2019-12-31" max="2020-06-14" value="2020-06-14">
+                    </p>
 
                     <button type="submit" id="refresh" onclick="">Grafik Aktualisieren</button>
                     <!----- Den Inhalt der ersten Längerauswahl auslesen und die Daten aus der Datenbank holen ----->
@@ -120,7 +126,16 @@
                         } else {
                             $property = "null";
                         }
-
+                        if(isset($_GET['fromDate'])) {
+                            $fromDate = $_GET['fromDate'];
+                        } else {
+                            $fromDate = "2019-12-31";
+                        }
+                        if(isset($_GET['toDate'])) {
+                            $toDate = $_GET['toDate'];
+                        } else {
+                            $toDate = "2020-06-14";
+                        }
 
                         /*********** Daten für Property von Country 1 holen ************/
                         if(isset($_GET['region1'])) {
@@ -128,7 +143,10 @@
                         } else {
                             $region1 = "null";
                         }
-                        $query = "SELECT h_day, h_month, h_year, $property FROM has, daydata WHERE h_dayid = d_dayid AND h_geoid = '$region1' ORDER BY h_year, h_month, h_day";
+                        $query = "SELECT h_day, h_month, h_year, $property FROM has, daydata WHERE h_dayid = d_dayid AND h_geoid = '$region1'
+                            AND ((h_year = ".substr($fromDate,0,4)." AND h_month = ".substr($fromDate,5,2)." AND h_day >= ".substr($fromDate,8,2).") OR (h_year >= ".substr($fromDate,0,4)." AND h_month > ".substr($fromDate,5,2).") OR (h_year > ".substr($fromDate,0,4).")) 
+                            AND ((h_year = ".substr($toDate,0,4)." AND h_month = ".substr($toDate,5,2)." AND h_day <= ".substr($toDate,8,2).") OR (h_year <= ".substr($toDate,0,4)." AND h_month < ".substr($toDate,5,2).") OR (h_year < ".substr($toDate,0,4)."))
+                            ORDER BY h_year, h_month, h_day";
                         $result = pg_query($query) or die('Abfrage fehlgeschlagen: ' . pg_last_error());     
                         $dates = []; 
                         $dataForCountry1 = [];
@@ -153,7 +171,10 @@
                         } else {
                             $region2 = "null";
                         }
-                        $query = "SELECT h_day, h_month, h_year, $property FROM has, daydata WHERE h_dayid = d_dayid AND h_geoid = '$region2' ORDER BY h_year, h_month, h_day";
+                        $query = "SELECT h_day, h_month, h_year, $property FROM has, daydata WHERE h_dayid = d_dayid AND h_geoid = '$region2' 
+                            AND ((h_year = ".substr($fromDate,0,4)." AND h_month = ".substr($fromDate,5,2)." AND h_day >= ".substr($fromDate,8,2).") OR (h_year >= ".substr($fromDate,0,4)." AND h_month > ".substr($fromDate,5,2).") OR (h_year > ".substr($fromDate,0,4).")) 
+                            AND ((h_year = ".substr($toDate,0,4)." AND h_month = ".substr($toDate,5,2)." AND h_day <= ".substr($toDate,8,2).") OR (h_year <= ".substr($toDate,0,4)." AND h_month < ".substr($toDate,5,2).") OR (h_year < ".substr($toDate,0,4)."))
+                            ORDER BY h_year, h_month, h_day";
                         $result = pg_query($query) or die('Abfrage fehlgeschlagen: ' . pg_last_error());     
                         $dataForCountry2 = [];
                         while ($row = pg_fetch_array($result)) {
@@ -175,7 +196,10 @@
                         } else {
                             $region3 = "null";
                         }
-                        $query = "SELECT h_day, h_month, h_year, $property FROM has, daydata WHERE h_dayid = d_dayid AND h_geoid = '$region3' ORDER BY h_year, h_month, h_day";
+                        $query = "SELECT h_day, h_month, h_year, $property FROM has, daydata WHERE h_dayid = d_dayid AND h_geoid = '$region3'
+                            AND ((h_year = ".substr($fromDate,0,4)." AND h_month = ".substr($fromDate,5,2)." AND h_day >= ".substr($fromDate,8,2).") OR (h_year >= ".substr($fromDate,0,4)." AND h_month > ".substr($fromDate,5,2).") OR (h_year > ".substr($fromDate,0,4).")) 
+                            AND ((h_year = ".substr($toDate,0,4)." AND h_month = ".substr($toDate,5,2)." AND h_day <= ".substr($toDate,8,2).") OR (h_year <= ".substr($toDate,0,4)." AND h_month < ".substr($toDate,5,2).") OR (h_year < ".substr($toDate,0,4)."))
+                            ORDER BY h_year, h_month, h_day";
                         $result = pg_query($query) or die('Abfrage fehlgeschlagen: ' . pg_last_error());     
                         $dataForCountry3 = [];
                         while ($row = pg_fetch_array($result)) {
@@ -262,7 +286,7 @@
         </div>
         
         <div id="wrapper2" class="wrapper">
-            <h2>Land-Statistiken</h2>
+            <h2>Statistiken einer Region</h2>
             <h2 id="chart2Header"></h2>
             <section>
                 <canvas id="myChart2" width="500" height="300"></canvas>
@@ -319,6 +343,11 @@
                             </optgroup>
                         </select>
                     </p>
+                    <p class="form-box">
+                        <label for="date" title="date">Zeitraum</label>
+          
+                        <input id="fromDate_single" name="fromDate_single" type="date" value="2019-12-31" min="2019-12-31" max="2020-06-14"> - <input id="toDate_single" name="toDate_single" type="date" min="2019-12-31" max="2020-06-14" value="2020-06-14">
+                    </p>
 
                     <button type="submit" id="refresh" onclick="">Grafik Aktualisieren</button>
                     <!----- Den Inhalt der ersten Längerauswahl auslesen und die Daten aus der Datenbank holen ----->
@@ -335,20 +364,39 @@
                         } else {
                             $property_single2 = "null";
                         }
-
-
-                        /*********** Daten für Property1,2 und 3 von Land holen ************/
                         if(isset($_GET['region_single'])) {
                             $region_single = $_GET['region_single'];
                         } else {
                             $region_single = "null";
                         }
+                        if(isset($_GET['fromDate_single'])) {
+                            $fromDate_single = $_GET['fromDate_single'];
+                        } else {
+                            $fromDate_single = "2019-12-31";
+                        }
+                        if(isset($_GET['toDate_single'])) {
+                            $toDate_single = $_GET['toDate_single'];
+                        } else {
+                            $toDate_single = "2020-06-14";
+                        }
+
+                        /*********** Daten für Property1 und 2 von region_single holen ************/
+                        
                         if($property_single1 == "cases_pht") {
-                            $query = "SELECT h_day, h_month, h_year, ((d_cases/c_population)*100000) FROM has, daydata, country WHERE h_dayid = d_dayid AND c_geoid = h_geoid AND h_geoid = '$region_single' ORDER BY h_year, h_month, h_day";
+                            $query = "SELECT h_day, h_month, h_year, ((d_cases/c_population)*100000) FROM has, daydata, country WHERE h_dayid = d_dayid AND c_geoid = h_geoid AND h_geoid = '$region_single'
+                            AND ((h_year = ".substr($fromDate_single,0,4)." AND h_month = ".substr($fromDate_single,5,2)." AND h_day >= ".substr($fromDate_single,8,2).") OR (h_year >= ".substr($fromDate_single,0,4)." AND h_month > ".substr($fromDate_single,5,2).") OR (h_year > ".substr($fromDate_single,0,4).")) 
+                            AND ((h_year = ".substr($toDate_single,0,4)." AND h_month = ".substr($toDate_single,5,2)." AND h_day <= ".substr($toDate_single,8,2).") OR (h_year <= ".substr($toDate_single,0,4)." AND h_month < ".substr($toDate_single,5,2).") OR (h_year < ".substr($toDate_single,0,4)."))
+                            ORDER BY h_year, h_month, h_day";
                         }elseif($property_single1 == "deaths_pht") {
-                            $query = "SELECT h_day, h_month, h_year, ((d_deaths/c_population)*100000) FROM has, daydata, country WHERE h_dayid = d_dayid AND c_geoid = h_geoid AND h_geoid = '$region_single' ORDER BY h_year, h_month, h_day";
+                            $query = "SELECT h_day, h_month, h_year, ((d_deaths/c_population)*100000) FROM has, daydata, country WHERE h_dayid = d_dayid AND c_geoid = h_geoid AND h_geoid = '$region_single' 
+                            AND ((h_year = ".substr($fromDate_single,0,4)." AND h_month = ".substr($fromDate_single,5,2)." AND h_day >= ".substr($fromDate_single,8,2).") OR (h_year >= ".substr($fromDate_single,0,4)." AND h_month > ".substr($fromDate_single,5,2).") OR (h_year > ".substr($fromDate_single,0,4).")) 
+                            AND ((h_year = ".substr($toDate_single,0,4)." AND h_month = ".substr($toDate_single,5,2)." AND h_day <= ".substr($toDate_single,8,2).") OR (h_year <= ".substr($toDate_single,0,4)." AND h_month < ".substr($toDate_single,5,2).") OR (h_year < ".substr($toDate_single,0,4)."))
+                            ORDER BY h_year, h_month, h_day";
                         }else {
-                            $query = "SELECT h_day, h_month, h_year, $property_single1 FROM has, daydata WHERE h_dayid = d_dayid AND h_geoid = '$region_single' ORDER BY h_year, h_month, h_day";
+                            $query = "SELECT h_day, h_month, h_year, $property_single1 FROM has, daydata WHERE h_dayid = d_dayid AND h_geoid = '$region_single' 
+                            AND ((h_year = ".substr($fromDate_single,0,4)." AND h_month = ".substr($fromDate_single,5,2)." AND h_day >= ".substr($fromDate_single,8,2).") OR (h_year >= ".substr($fromDate_single,0,4)." AND h_month > ".substr($fromDate_single,5,2).") OR (h_year > ".substr($fromDate_single,0,4).")) 
+                            AND ((h_year = ".substr($toDate_single,0,4)." AND h_month = ".substr($toDate_single,5,2)." AND h_day <= ".substr($toDate_single,8,2).") OR (h_year <= ".substr($toDate_single,0,4)." AND h_month < ".substr($toDate_single,5,2).") OR (h_year < ".substr($toDate_single,0,4)."))
+                            ORDER BY h_year, h_month, h_day";
                         }
                         $result = pg_query($query) or die('Abfrage fehlgeschlagen: ' . pg_last_error());     
                         $dates = [];
@@ -360,11 +408,20 @@
                         }
                         pg_free_result($result);
                         if($property_single2 == "cases_pht") {
-                            $query = "SELECT h_day, h_month, h_year, ((d_cases/c_population)*100000) FROM has, daydata, country WHERE h_dayid = d_dayid AND c_geoid = h_geoid AND h_geoid = '$region_single' ORDER BY h_year, h_month, h_day";
+                            $query = "SELECT h_day, h_month, h_year, ((d_cases/c_population)*100000) FROM has, daydata, country WHERE h_dayid = d_dayid AND c_geoid = h_geoid AND h_geoid = '$region_single'
+                            AND ((h_year = ".substr($fromDate_single,0,4)." AND h_month = ".substr($fromDate_single,5,2)." AND h_day >= ".substr($fromDate_single,8,2).") OR (h_year >= ".substr($fromDate_single,0,4)." AND h_month > ".substr($fromDate_single,5,2).") OR (h_year > ".substr($fromDate_single,0,4).")) 
+                            AND ((h_year = ".substr($toDate_single,0,4)." AND h_month = ".substr($toDate_single,5,2)." AND h_day <= ".substr($toDate_single,8,2).") OR (h_year <= ".substr($toDate_single,0,4)." AND h_month < ".substr($toDate_single,5,2).") OR (h_year < ".substr($toDate_single,0,4)."))
+                            ORDER BY h_year, h_month, h_day";
                         }elseif($property_single2 == "deaths_pht") {
-                            $query = "SELECT h_day, h_month, h_year, ((d_deaths/c_population)*100000) FROM has, daydata, country WHERE h_dayid = d_dayid AND c_geoid = h_geoid AND h_geoid = '$region_single' ORDER BY h_year, h_month, h_day";
+                            $query = "SELECT h_day, h_month, h_year, ((d_deaths/c_population)*100000) FROM has, daydata, country WHERE h_dayid = d_dayid AND c_geoid = h_geoid AND h_geoid = '$region_single' 
+                            AND ((h_year = ".substr($fromDate_single,0,4)." AND h_month = ".substr($fromDate_single,5,2)." AND h_day >= ".substr($fromDate_single,8,2).") OR (h_year >= ".substr($fromDate_single,0,4)." AND h_month > ".substr($fromDate_single,5,2).") OR (h_year > ".substr($fromDate_single,0,4).")) 
+                            AND ((h_year = ".substr($toDate_single,0,4)." AND h_month = ".substr($toDate_single,5,2)." AND h_day <= ".substr($toDate_single,8,2).") OR (h_year <= ".substr($toDate_single,0,4)." AND h_month < ".substr($toDate_single,5,2).") OR (h_year < ".substr($toDate_single,0,4)."))
+                            ORDER BY h_year, h_month, h_day";
                         }else {
-                            $query = "SELECT h_day, h_month, h_year, $property_single2 FROM has, daydata WHERE h_dayid = d_dayid AND h_geoid = '$region_single' ORDER BY h_year, h_month, h_day";
+                            $query = "SELECT h_day, h_month, h_year, $property_single2 FROM has, daydata WHERE h_dayid = d_dayid AND h_geoid = '$region_single' 
+                            AND ((h_year = ".substr($fromDate_single,0,4)." AND h_month = ".substr($fromDate_single,5,2)." AND h_day >= ".substr($fromDate_single,8,2).") OR (h_year >= ".substr($fromDate_single,0,4)." AND h_month > ".substr($fromDate_single,5,2).") OR (h_year > ".substr($fromDate_single,0,4).")) 
+                            AND ((h_year = ".substr($toDate_single,0,4)." AND h_month = ".substr($toDate_single,5,2)." AND h_day <= ".substr($toDate_single,8,2).") OR (h_year <= ".substr($toDate_single,0,4)." AND h_month < ".substr($toDate_single,5,2).") OR (h_year < ".substr($toDate_single,0,4)."))
+                            ORDER BY h_year, h_month, h_day";
                         }
                         $result = pg_query($query) or die('Abfrage fehlgeschlagen: ' . pg_last_error());     
                         $dates = [];
@@ -395,7 +452,7 @@
                         if(region_single != "null")
                             document.getElementById('region_singleInfo').innerHTML = "Aktiv: "+region_single[0]+"<br>Bevölkerung: "+region_single[1]+" Ew.<br>Bevölkerungsdichte: "+region_single[2]+" Ew./km^2<br>Krankenhausbetten/1000Ew.: "+region_single[3]+"";
 
-                        document.getElementById("chart2Header").innerHTML = "Vergleichs-Parameter: "+region_single;
+                        document.getElementById("chart2Header").innerHTML = "Region: "+region_single[0];
                         var myChartObject = document.getElementById('myChart2');
                         new Chart(myChartObject, {
                             type: 'line',
