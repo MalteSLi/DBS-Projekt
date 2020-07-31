@@ -13,7 +13,7 @@
     </head>
     <body>
         
-        <header><h1>Liniendiegramm-Editor</h1></header>
+        <header><h1>Weltweite Covid-19 Statistiken</h1></header>
         
         <div id="wrapper1" class="wrapper">
             <h2>Direkter Ländervergleich</h2>
@@ -60,6 +60,7 @@
                             </optgroup>
                         </select>
                     </p>
+                    <p id="regionInfo1"></p>
                     <p>
                         <label for="country" title="Country">Land 2</label>
                         <select id="region2" name="region2">
@@ -76,6 +77,7 @@
                             </optgroup>
                         </select>
                     </p>
+                    <p id="regionInfo2"></p>
                     <p>
                         <label for="country" title="Country">Land 3</label>
                         <select id="region3" name="region3">
@@ -92,6 +94,7 @@
                             </optgroup>
                         </select>
                     </p>
+                    <p id="regionInfo3"></p>
         
                     <p class="form-box">
                         <label for="property" title="Property">Parameter</label>
@@ -136,10 +139,10 @@
                             //echo $row[0]."/".$row[1]."/".$row[2]." ".$property.":".$row[3]."<br>";  // Zum Überprüfen/Ausgaben der Daten
                         }
                         pg_free_result($result);
-                        $query = "SELECT c_name FROM country WHERE c_geoid = '$region1'";
+                        $query = "SELECT c_name, c_population, c_population_density, c_hospital_beds_pt FROM country WHERE c_geoid = '$region1'";
                         $result = pg_query($query) or die('Abfrage fehlgeschlagen: ' . pg_last_error());
                         while ($row = pg_fetch_array($result)) {
-                            $region1 = $row[0];
+                            $region1 = $row;
                         }
                         pg_free_result($result);
 
@@ -158,10 +161,10 @@
                             //echo $row[0]."/".$row[1]."/".$row[2]." ".$property.":".$row[3]."<br>";  // Zum Überprüfen/Ausgaben der Daten
                         }
                         pg_free_result($result);
-                        $query = "SELECT c_name FROM country WHERE c_geoid = '$region2'";
+                        $query = "SELECT c_name, c_population, c_population_density, c_hospital_beds_pt FROM country WHERE c_geoid = '$region2'";
                         $result = pg_query($query) or die('Abfrage fehlgeschlagen: ' . pg_last_error());
                         while ($row = pg_fetch_array($result)) {
-                            $region2 = $row[0];
+                            $region2 = $row;
                         }
                         pg_free_result($result);
 
@@ -180,10 +183,10 @@
                             //echo $row[0]."/".$row[1]."/".$row[2]." ".$property.":".$row[3]."<br>";  // Zum Überprüfen/Ausgaben der Daten
                         }
                         pg_free_result($result);
-                        $query = "SELECT c_name FROM country WHERE c_geoid = '$region3'";
+                        $query = "SELECT c_name, c_population, c_population_density, c_hospital_beds_pt FROM country WHERE c_geoid = '$region3'";
                         $result = pg_query($query) or die('Abfrage fehlgeschlagen: ' . pg_last_error());
                         while ($row = pg_fetch_array($result)) {
-                            $region3 = $row[0];
+                            $region3 = $row;
                         }
                         pg_free_result($result);
                     ?>
@@ -192,12 +195,24 @@
                         var property = <?php echo json_encode($property); ?>;
                         document.getElementById('property').value = property;
                         var xLabels = <?php echo json_encode($dates); ?>;
+
+                        /*** Region 1 bearbeiten ***/
                         var data1 = <?php echo json_encode($dataForCountry1); ?>;
                         var region1 = <?php echo json_encode($region1); ?>;
+                        if(region1 != "null")
+                            document.getElementById('regionInfo1').innerHTML = "Aktiv: "+region1[0]+"<br>Bevölkerung: "+region1[1]+" Ew.<br>Bevölkerungsdichte: "+region1[2]+" Ew./km^2<br>Krankenhausbetten/1000Ew.: "+region1[3]+"";
+
+                        /*** Region 2 bearbeiten ***/
                         var data2 = <?php echo json_encode($dataForCountry2); ?>;
                         var region2 = <?php echo json_encode($region2); ?>;
+                        if(region2 != "null")
+                            document.getElementById('regionInfo2').innerHTML = "Aktiv: "+region2[0]+"<br>Bevölkerung: "+region2[1]+" Ew.<br>Bevölkerungsdichte: "+region2[2]+" Ew./km^2<br>Krankenhausbetten/1000Ew.: "+region2[3]+"";
+                        
+                        /*** Region 3 bearbeiten ***/
                         var data3 = <?php echo json_encode($dataForCountry3); ?>;
                         var region3 = <?php echo json_encode($region3); ?>;
+                        if(region3 != "null")
+                            document.getElementById('regionInfo3').innerHTML = "Aktiv: "+region3[0]+"<br>Bevölkerung: "+region3[1]+" Ew.<br>Bevölkerungsdichte: "+region3[2]+" Ew./km^2<br>Krankenhausbetten/1000Ew.: "+region3[3]+"";
 
                         document.getElementById("chart1Header").innerHTML = "Vergleichs-Parameter: "+property.substring(2);
                         var myChartObject = document.getElementById('myChart');
@@ -206,19 +221,19 @@
                             data: {
                                 labels: xLabels,
                                 datasets: [{
-                                    label: region1,
+                                    label: region1[0],
                                     fill: false,
                                     backgroundColor: '#B3D6C6',
                                     borderColor: '#B3D6C6',
                                     data: data1,
                                 }, {
-                                    label: region2,
+                                    label: region2[0],
                                     fill: false,
                                     backgroundColor: 'rgba(255,100,0,1)',
                                     borderColor: 'rgba(255,100,0,1)',
                                     data: data2,
                                 }, {
-                                    label: region3,
+                                    label: region3[0],
                                     fill: false,
                                     backgroundColor: 'rgba(50,200,200,1)',
                                     borderColor: 'rgba(50,200,200,1)',
@@ -272,6 +287,7 @@
                             </optgroup>
                         </select>
                     </p>
+                    <p id="region_singleInfo"></p>
         
                     <p class="form-box">
                         <label for="property" title="Property">Parameter 1</label>
@@ -283,6 +299,8 @@
                                 <option value="d_deaths">Deaths</option>
                                 <option value="d_test">Tests</option>
                                 <option value="d_sringency_index">Sringency Index</option>
+                                <option value="cases_pht">Cases/1000</option>
+                                <option value="deaths_pht">Deaths/100,000</option>
                             </optgroup>
                         </select>
                     </p>
@@ -296,6 +314,8 @@
                                 <option value="d_deaths">Deaths</option>
                                 <option value="d_test">Tests</option>
                                 <option value="d_sringency_index">Sringency Index</option>
+                                <option value="cases_pht">Cases/100,000</option>
+                                <option value="deaths_pht">Deaths/100,000</option>
                             </optgroup>
                         </select>
                     </p>
@@ -323,7 +343,13 @@
                         } else {
                             $region_single = "null";
                         }
-                        $query = "SELECT h_day, h_month, h_year, $property_single1 FROM has, daydata WHERE h_dayid = d_dayid AND h_geoid = '$region_single' ORDER BY h_year, h_month, h_day";
+                        if($property_single1 == "cases_pht") {
+                            $query = "SELECT h_day, h_month, h_year, ((d_cases/c_population)*100000) FROM has, daydata, country WHERE h_dayid = d_dayid AND c_geoid = h_geoid AND h_geoid = '$region_single' ORDER BY h_year, h_month, h_day";
+                        }elseif($property_single1 == "deaths_pht") {
+                            $query = "SELECT h_day, h_month, h_year, ((d_deaths/c_population)*100000) FROM has, daydata, country WHERE h_dayid = d_dayid AND c_geoid = h_geoid AND h_geoid = '$region_single' ORDER BY h_year, h_month, h_day";
+                        }else {
+                            $query = "SELECT h_day, h_month, h_year, $property_single1 FROM has, daydata WHERE h_dayid = d_dayid AND h_geoid = '$region_single' ORDER BY h_year, h_month, h_day";
+                        }
                         $result = pg_query($query) or die('Abfrage fehlgeschlagen: ' . pg_last_error());     
                         $dates = [];
                         $dataForProperty1 = [];
@@ -333,7 +359,13 @@
                             //echo $row[0]."/".$row[1]."/".$row[2]." ".$property.":".$row[3]."<br>";  // Zum Überprüfen/Ausgaben der Daten
                         }
                         pg_free_result($result);
-                        $query = "SELECT h_day, h_month, h_year, $property_single2 FROM has, daydata WHERE h_dayid = d_dayid AND h_geoid = '$region_single' ORDER BY h_year, h_month, h_day";
+                        if($property_single2 == "cases_pht") {
+                            $query = "SELECT h_day, h_month, h_year, ((d_cases/c_population)*100000) FROM has, daydata, country WHERE h_dayid = d_dayid AND c_geoid = h_geoid AND h_geoid = '$region_single' ORDER BY h_year, h_month, h_day";
+                        }elseif($property_single2 == "deaths_pht") {
+                            $query = "SELECT h_day, h_month, h_year, ((d_deaths/c_population)*100000) FROM has, daydata, country WHERE h_dayid = d_dayid AND c_geoid = h_geoid AND h_geoid = '$region_single' ORDER BY h_year, h_month, h_day";
+                        }else {
+                            $query = "SELECT h_day, h_month, h_year, $property_single2 FROM has, daydata WHERE h_dayid = d_dayid AND h_geoid = '$region_single' ORDER BY h_year, h_month, h_day";
+                        }
                         $result = pg_query($query) or die('Abfrage fehlgeschlagen: ' . pg_last_error());     
                         $dates = [];
                         $dataForProperty2 = [];
@@ -341,6 +373,12 @@
                             array_push($dates, $row[2]."-".$row[1]."-".$row[0]);
                             array_push($dataForProperty2, ['x' => $row[2]."-".$row[1]."-".$row[0], 'y' => $row[3]]);
                             //echo $row[0]."/".$row[1]."/".$row[2]." ".$property.":".$row[3]."<br>";  // Zum Überprüfen/Ausgaben der Daten
+                        }
+                        pg_free_result($result);
+                        $query = "SELECT c_name, c_population, c_population_density, c_hospital_beds_pt FROM country WHERE c_geoid = '$region_single'";
+                        $result = pg_query($query) or die('Abfrage fehlgeschlagen: ' . pg_last_error());
+                        while ($row = pg_fetch_array($result)) {
+                            $region_single = $row;
                         }
                         pg_free_result($result);
                     ?>
@@ -354,6 +392,8 @@
                         var data1 = <?php echo json_encode($dataForProperty1); ?>;
                         var data2 = <?php echo json_encode($dataForProperty2); ?>;
                         var region_single = <?php echo json_encode($region_single); ?>;
+                        if(region_single != "null")
+                            document.getElementById('region_singleInfo').innerHTML = "Aktiv: "+region_single[0]+"<br>Bevölkerung: "+region_single[1]+" Ew.<br>Bevölkerungsdichte: "+region_single[2]+" Ew./km^2<br>Krankenhausbetten/1000Ew.: "+region_single[3]+"";
 
                         document.getElementById("chart2Header").innerHTML = "Vergleichs-Parameter: "+region_single;
                         var myChartObject = document.getElementById('myChart2');
