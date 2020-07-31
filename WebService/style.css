@@ -1,12 +1,15 @@
-#wrapper{
+.wrapper{
     width: 1050px;
     margin-right: auto;
     margin-left: auto;
+    height: 630px;
+    text-align: left;
 }
 
 header{
     height: 150px;
     background: transparent;
+    text-align: center;
 }
 
 section{
