@@ -2,7 +2,7 @@
 <html>
     <head>
 
-        <link rel="stylesheet" href="style.css" type="text/css">
+        <link rel="stylesheet" href="style1.css" type="text/css">
 
         <!--required meta tags-->
         <meta charset = "utf-8">
