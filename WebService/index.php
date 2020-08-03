@@ -2,11 +2,11 @@
 <html>
     <head>
 
-        <link rel="stylesheet" href="style.css" type="text/css">
+        <link rel="stylesheet" href="style1.css" type="text/css">
 
         <!--required meta tags-->
         <meta charset = "utf-8">
-        <title>Covid19Data</title>
+        <title>Covid19DataStats</title>
         <!--Chart.js einbinden-->
         <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
     
@@ -20,16 +20,16 @@
             <h2 id="chart1Header"></h2>
             <section>
                 <h2 id="chart1Header"></h2>
-                <canvas id="myChart" width="500" height="300"></canvas>
+                <canvas id="myChart" width="500" height="200"></canvas>
             </section>
 
             <p id="testAusgabe"></p>
-            <aside>
+            <section>
                 <form name="menu1" action="#">
                     <p class="form-box">
                         <label for="country" title="Country">Land 1</label>
                         <select id="region1" name="region1">
-                            <optgroup label="Countries">
+                            <optgroup label="Länder">
                                 <option value="null">null</option>
                                 <!----- PHP script um die Länder1 für das Drop-Down Menü zu holen ----->
                                 <?php
@@ -64,7 +64,7 @@
                     <p>
                         <label for="country" title="Country">Land 2</label>
                         <select id="region2" name="region2">
-                            <optgroup label="Countries">
+                            <optgroup label="Länder">
                                 <option value="null">null</option>
                                 <!----- PHP script um die Länder2 im Drop-Down Menü anzuzeigen ----->
                                 <?php
@@ -81,7 +81,7 @@
                     <p>
                         <label for="country" title="Country">Land 3</label>
                         <select id="region3" name="region3">
-                            <optgroup label="Countries">
+                            <optgroup label="Länder">
                                 <option value="null">null</option>
                                 <!----- PHP script um die Länder2 im Drop-Down Menü anzuzeigen ----->
                                 <?php
@@ -100,12 +100,12 @@
                         <label for="property" title="Property">Parameter</label>
           
                         <select id="property" name="property">
-                            <optgroup label="Properties">
+                            <optgroup label="Parameter">
                                 <option value="null">null</option>
-                                <option value="d_cases">Cases</option>
-                                <option value="d_deaths">Deaths</option>
+                                <option value="d_cases">Fälle</option>
+                                <option value="d_deaths">Tote</option>
                                 <option value="d_test">Tests</option>
-                                <option value="d_sringency_index">Sringency Index</option>
+                                <option value="d_sringency_index">Strenge-Index</option>
                             </optgroup>
                         </select>
                     </p>
@@ -136,6 +136,17 @@
                         } else {
                             $toDate = "2020-06-14";
                         }
+                        $query = "SELECT h_day, h_month, h_year FROM has WHERE
+                            ((h_year = ".substr($fromDate,0,4)." AND h_month = ".substr($fromDate,5,2)." AND h_day >= ".substr($fromDate,8,2).") OR (h_year >= ".substr($fromDate,0,4)." AND h_month > ".substr($fromDate,5,2).") OR (h_year > ".substr($fromDate,0,4).")) 
+                            AND ((h_year = ".substr($toDate,0,4)." AND h_month = ".substr($toDate,5,2)." AND h_day <= ".substr($toDate,8,2).") OR (h_year <= ".substr($toDate,0,4)." AND h_month < ".substr($toDate,5,2).") OR (h_year < ".substr($toDate,0,4)."))
+                            ORDER BY h_year, h_month, h_day";
+                        $result = pg_query($query) or die('Abfrage fehlgeschlagen: ' . pg_last_error());     
+                        $dates = []; 
+                        while ($row = pg_fetch_array($result)) {
+                            array_push($dates, $row[2]."-".$row[1]."-".$row[0]);
+                            //echo $row[0]."/".$row[1]."/".$row[2]." ".$property.":".$row[3]."<br>";  // Zum Überprüfen/Ausgaben der Daten
+                        }
+                        pg_free_result($result);
 
                         /*********** Daten für Property von Country 1 holen ************/
                         if(isset($_GET['region1'])) {
@@ -147,12 +158,9 @@
                             AND ((h_year = ".substr($fromDate,0,4)." AND h_month = ".substr($fromDate,5,2)." AND h_day >= ".substr($fromDate,8,2).") OR (h_year >= ".substr($fromDate,0,4)." AND h_month > ".substr($fromDate,5,2).") OR (h_year > ".substr($fromDate,0,4).")) 
                             AND ((h_year = ".substr($toDate,0,4)." AND h_month = ".substr($toDate,5,2)." AND h_day <= ".substr($toDate,8,2).") OR (h_year <= ".substr($toDate,0,4)." AND h_month < ".substr($toDate,5,2).") OR (h_year < ".substr($toDate,0,4)."))
                             ORDER BY h_year, h_month, h_day";
-                        $result = pg_query($query) or die('Abfrage fehlgeschlagen: ' . pg_last_error());     
-                        $dates = []; 
+                        $result = pg_query($query) or die('Abfrage fehlgeschlagen: ' . pg_last_error());    
                         $dataForCountry1 = [];
                         while ($row = pg_fetch_array($result)) {
-                            //array_push($dates, $row[0]."/".$row[1]."/".$row[2]);
-                            array_push($dates, $row[2]."-".$row[1]."-".$row[0]);
                             array_push($dataForCountry1, ['x' => $row[2]."-".$row[1]."-".$row[0], 'y' => $row[3]]);
                             //echo $row[0]."/".$row[1]."/".$row[2]." ".$property.":".$row[3]."<br>";  // Zum Überprüfen/Ausgaben der Daten
                         }
@@ -281,7 +289,7 @@
                         });
                     </script>
                 </form>
-            </aside>
+            </section>
 
         </div>
         
@@ -289,16 +297,16 @@
             <h2>Statistiken einer Region</h2>
             <h2 id="chart2Header"></h2>
             <section>
-                <canvas id="myChart2" width="500" height="300"></canvas>
+                <canvas id="myChart2" width="500" height="200"></canvas>
             </section>
 
             <p id="testAusgabe"></p>
-            <aside>
+            <section>
                 <form name="menu1" action="#">
                     <p>
                         <label for="country" title="Country">Land</label>
                         <select id="region_single" name="region_single">
-                            <optgroup label="Countries">
+                            <optgroup label="Länder">
                                 <option value="null">null</option>
                                 <!----- PHP script um die Länder2 im Drop-Down Menü anzuzeigen ----->
                                 <?php
@@ -317,14 +325,14 @@
                         <label for="property" title="Property">Parameter 1</label>
           
                         <select id="property_single1" name="property_single1">
-                            <optgroup label="Properties">
+                            <optgroup label="Parameter">
                                 <option value="null">null</option>
-                                <option value="d_cases">Cases</option>
-                                <option value="d_deaths">Deaths</option>
+                                <option value="d_cases">Fälle</option>
+                                <option value="d_deaths">Tote</option>
                                 <option value="d_test">Tests</option>
-                                <option value="d_sringency_index">Sringency Index</option>
-                                <option value="cases_pht">Cases/1000</option>
-                                <option value="deaths_pht">Deaths/100,000</option>
+                                <option value="d_sringency_index">Strenge-Index</option>
+                                <option value="cases_pht">Fälle pro 100k Einwohner</option>
+                                <option value="deaths_pht">Tote pro 100k Einwohner</option>
                             </optgroup>
                         </select>
                     </p>
@@ -332,14 +340,14 @@
                         <label for="property" title="Property">Parameter 2</label>
           
                         <select id="property_single2" name="property_single2">
-                            <optgroup label="Properties">
+                            <optgroup label="Parameter">
                                 <option value="null">null</option>
-                                <option value="d_cases">Cases</option>
-                                <option value="d_deaths">Deaths</option>
+                                <option value="d_cases">Fälle</option>
+                                <option value="d_deaths">Tote</option>
                                 <option value="d_test">Tests</option>
-                                <option value="d_sringency_index">Sringency Index</option>
-                                <option value="cases_pht">Cases/100,000</option>
-                                <option value="deaths_pht">Deaths/100,000</option>
+                                <option value="d_sringency_index">Strenge-Index</option>
+                                <option value="cases_pht">Fälle pro 100k Einwohner</option>
+                                <option value="deaths_pht">Tote pro 100k Einwohner</option>
                             </optgroup>
                         </select>
                     </p>
@@ -379,6 +387,17 @@
                         } else {
                             $toDate_single = "2020-06-14";
                         }
+                        $query = "SELECT h_day, h_month, h_year FROM has WHERE
+                            ((h_year = ".substr($fromDate_single,0,4)." AND h_month = ".substr($fromDate_single,5,2)." AND h_day >= ".substr($fromDate_single,8,2).") OR (h_year >= ".substr($fromDate_single,0,4)." AND h_month > ".substr($fromDate_single,5,2).") OR (h_year > ".substr($fromDate_single,0,4).")) 
+                            AND ((h_year = ".substr($toDate_single,0,4)." AND h_month = ".substr($toDate_single,5,2)." AND h_day <= ".substr($toDate_single,8,2).") OR (h_year <= ".substr($toDate_single,0,4)." AND h_month < ".substr($toDate_single,5,2).") OR (h_year < ".substr($toDate_single,0,4)."))
+                            ORDER BY h_year, h_month, h_day";
+                        $result = pg_query($query) or die('Abfrage fehlgeschlagen: ' . pg_last_error());     
+                        $dates_single = []; 
+                        while ($row = pg_fetch_array($result)) {
+                            array_push($dates_single, $row[2]."-".$row[1]."-".$row[0]);
+                            //echo $row[0]."/".$row[1]."/".$row[2]." ".$property.":".$row[3]."<br>";  // Zum Überprüfen/Ausgaben der Daten
+                        }
+                        pg_free_result($result);
 
                         /*********** Daten für Property1 und 2 von region_single holen ************/
                         
@@ -398,11 +417,9 @@
                             AND ((h_year = ".substr($toDate_single,0,4)." AND h_month = ".substr($toDate_single,5,2)." AND h_day <= ".substr($toDate_single,8,2).") OR (h_year <= ".substr($toDate_single,0,4)." AND h_month < ".substr($toDate_single,5,2).") OR (h_year < ".substr($toDate_single,0,4)."))
                             ORDER BY h_year, h_month, h_day";
                         }
-                        $result = pg_query($query) or die('Abfrage fehlgeschlagen: ' . pg_last_error());     
-                        $dates = [];
+                        $result = pg_query($query) or die('Abfrage fehlgeschlagen: ' . pg_last_error());   
                         $dataForProperty1 = [];
                         while ($row = pg_fetch_array($result)) {
-                            array_push($dates, $row[2]."-".$row[1]."-".$row[0]);
                             array_push($dataForProperty1, ['x' => $row[2]."-".$row[1]."-".$row[0], 'y' => $row[3]]);
                             //echo $row[0]."/".$row[1]."/".$row[2]." ".$property.":".$row[3]."<br>";  // Zum Überprüfen/Ausgaben der Daten
                         }
@@ -424,10 +441,8 @@
                             ORDER BY h_year, h_month, h_day";
                         }
                         $result = pg_query($query) or die('Abfrage fehlgeschlagen: ' . pg_last_error());     
-                        $dates = [];
                         $dataForProperty2 = [];
                         while ($row = pg_fetch_array($result)) {
-                            array_push($dates, $row[2]."-".$row[1]."-".$row[0]);
                             array_push($dataForProperty2, ['x' => $row[2]."-".$row[1]."-".$row[0], 'y' => $row[3]]);
                             //echo $row[0]."/".$row[1]."/".$row[2]." ".$property.":".$row[3]."<br>";  // Zum Überprüfen/Ausgaben der Daten
                         }
@@ -445,7 +460,7 @@
                         document.getElementById('property_single1').value = property_single1;
                         var property_single2 = <?php echo json_encode($property_single2); ?>;
                         document.getElementById('property_single2').value = property_single2;
-                        var xLabels = <?php echo json_encode($dates); ?>;
+                        var xLabels = <?php echo json_encode($dates_single); ?>;
                         var data1 = <?php echo json_encode($dataForProperty1); ?>;
                         var data2 = <?php echo json_encode($dataForProperty2); ?>;
                         var region_single = <?php echo json_encode($region_single); ?>;
@@ -499,7 +514,7 @@
                         });
                     </script>
                 </form>
-            </aside>
+            </section>
 
         </div>
     </body>
